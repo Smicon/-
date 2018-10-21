@@ -138,8 +138,17 @@ class Crawer_consume(object):
         shop_ids = [x.split('--')[1] for x in crawlers_name]
         crawlers = [x[1] for x in self.crawlers]
         for i, crawler in enumerate(crawlers):
+            import datetime
+            now = datetime.datetime.now()
+            yes = now+datetime.timedelta(days=-1)
+            now = now.strftime("%m-%d")
+            now = now.split('-')[0]+'月'+now.split('-')[1]+'日'
+            yes = yes.strftime("%m-%d")
+            yes = yes.split('-')[0]+'月'+yes.split('-')[1]+'日'
+
             print('正在获取店铺{}的商品ID...'.format(shop_ids[i]),end='')
-            cursor.execute("select product_id from tb_new_product_info where shop_id={}".format(shop_ids[i]))
+            # cursor.execute("select product_id from tb_new_product_info where shop_id={}".format(shop_ids[i]))
+            cursor.execute("select product_id from tb_new_product_info where shop_id={} and (publish_time = '{}' or publish_time = '{}')".format(shop_ids[i],now,yes))
             res = cursor.fetchall()
             print('ok')
             print('正在设置爬虫：{}...'.format(crawlers_name[i]), end='')
@@ -213,6 +222,6 @@ if __name__ == "__main__":
     crawers.stop_crawler()
     crawers.point_ids_crawler()
     crawers.start_crawler()
-    # crawers.all_crawer_stop_publish()
-    # crawers.all_crawer_start_publish()
+    # # crawers.all_crawer_stop_publish()
+    # # crawers.all_crawer_start_publish()
     crawers.new_product_craler()#处理淘宝新品爬虫
